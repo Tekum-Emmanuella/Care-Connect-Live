@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import logo from "@assets/generated_images/vibrant_abstract_medical_logo_symbol.png";
+import { useAuth } from "@/lib/auth";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
@@ -46,12 +47,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </nav>
 
         <div className="pt-6 border-t border-gray-100">
-          <Link href="/">
-            <div className="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-destructive hover:bg-red-50 rounded-xl cursor-pointer transition-colors">
-              <LogOut className="w-5 h-5" />
-              Log Out
-            </div>
-          </Link>
+          <div 
+            onClick={() => {
+              useAuth.getState().logout();
+              window.location.href = "/";
+            }}
+            className="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-destructive hover:bg-red-50 rounded-xl cursor-pointer transition-colors"
+          >
+            <LogOut className="w-5 h-5" />
+            Log Out
+          </div>
         </div>
       </aside>
 
@@ -91,12 +96,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 ))}
               </nav>
               <div className="pt-6 border-t border-gray-100">
-                <Link href="/">
-                  <div className="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-destructive rounded-xl cursor-pointer">
-                    <LogOut className="w-5 h-5" />
-                    Log Out
-                  </div>
-                </Link>
+                <div 
+                  onClick={() => {
+                    useAuth.getState().logout();
+                    window.location.href = "/";
+                  }}
+                  className="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-destructive rounded-xl cursor-pointer"
+                >
+                  <LogOut className="w-5 h-5" />
+                  Log Out
+                </div>
               </div>
             </div>
           </SheetContent>

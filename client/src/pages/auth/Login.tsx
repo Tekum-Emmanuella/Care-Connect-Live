@@ -1,4 +1,3 @@
-
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,19 +5,34 @@ import { Label } from "@/components/ui/label";
 import logo from "@assets/generated_images/vibrant_abstract_medical_logo_symbol.png";
 import heroImage from "@assets/generated_images/friendly_doctor_using_a_tablet_in_a_modern_clinic.png";
 import { useState } from "react";
+import { api } from "@/lib/api";
+import { useAuth } from "@/lib/auth";
+import { toast } from "sonner";
 
 export default function Login() {
   const [, setLocation] = useLocation();
   const [isLoading, setIsLoading] = useState(false);
+  const { setUser } = useAuth();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
-    // Mock login delay
-    setTimeout(() => {
-      setIsLoading(false);
+    
+    const formData = new FormData(e.currentTarget);
+    const identifier = formData.get('identifier') as string;
+    const password = formData.get('password') as string;
+
+    try {
+      const response = await api.login({ identifier, password });
+      setUser(response.user);
+      toast.success(`Welcome back, ${response.user.name}!`);
       setLocation("/dashboard");
-    }, 1000);
+    } catch (error: any) {
+      toast.error("Invalid credentials. Please try again.");
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -42,13 +56,15 @@ export default function Login() {
 
           <form onSubmit={handleLogin} className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="email">National ID / Email</Label>
+              <Label htmlFor="identifier">National ID / Email</Label>
               <Input 
-                id="email" 
+                id="identifier"
+                name="identifier"
                 type="text" 
                 placeholder="Enter your ID or Email" 
                 className="h-12 rounded-xl bg-gray-50 border-gray-200 focus:ring-primary focus:border-primary"
                 required
+                defaultValue="CM001234567"
               />
             </div>
             <div className="space-y-2">
@@ -57,11 +73,13 @@ export default function Login() {
                 <a href="#" className="text-sm text-primary hover:underline font-medium">Forgot?</a>
               </div>
               <Input 
-                id="password" 
+                id="password"
+                name="password"
                 type="password" 
                 placeholder="••••••••" 
                 className="h-12 rounded-xl bg-gray-50 border-gray-200 focus:ring-primary focus:border-primary"
                 required
+                defaultValue="password123"
               />
             </div>
 
@@ -69,6 +87,7 @@ export default function Login() {
               type="submit" 
               className="w-full h-12 text-base rounded-xl bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20 transition-all hover:-translate-y-0.5"
               disabled={isLoading}
+              data-testid="button-login"
             >
               {isLoading ? "Signing In..." : "Sign In"}
             </Button>
@@ -79,6 +98,12 @@ export default function Login() {
             <a href="#" className="text-primary font-medium hover:underline">
               Register at a hospital
             </a>
+          </div>
+          
+          <div className="p-3 bg-blue-50 rounded-lg text-xs text-blue-700 border border-blue-100">
+            <strong>Test credentials:</strong><br />
+            ID: CM001234567<br />
+            Password: password123
           </div>
         </div>
       </div>
