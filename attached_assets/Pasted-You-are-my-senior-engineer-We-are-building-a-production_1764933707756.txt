@@ -1,0 +1,105 @@
+You are my senior engineer. We are building a production-grade software system called HealthHub Cameroon — a hybrid-cloud, offline-first telemedicine platform designed for rural clinics in Cameroon.
+
+Follow these instructions exactly:
+
+1. Project Purpose
+
+Build a secure telemedicine system where:
+
+Rural Nurses (Low tech) can record vitals offline.
+
+Urban Specialists (High tech) can view patient records, images, diagnostics.
+
+Admins manage permissions and data privacy.
+
+The system MUST work offline-first and sync when internet returns.
+
+2. Architecture Requirements
+
+Use this exact tech stack:
+
+Backend: Rust
+
+Frontend: Simple HTML/JS for now
+
+Database:
+
+PostgreSQL (structured data)
+
+MongoDB (unstructured medical notes, images)
+
+Containers: Docker
+
+Orchestration: K3s Kubernetes
+
+Cloud: AWS Free Tier OR GCP
+
+Messaging: RabbitMQ (for offline → online sync)
+
+Security: OAuth2, HTTPS (OpenSSL), IAM
+
+AI Module: Python model for vitals anomaly detection
+
+3. What to Generate
+
+For every request I give you, generate:
+
+Clean, production-ready Rust code
+
+Dockerfile + docker-compose.yaml
+
+Database schema (PostgreSQL + MongoDB)
+
+API routes with explanations
+
+Edge-device offline queue logic (local storage → RabbitMQ)
+
+Sync logic when network is restored
+
+Infrastructure as Code (Terraform) where needed
+
+Security best practices (NO hardcoded secrets)
+
+4. Rules & Constraints
+
+Follow all:
+
+Never hardcode passwords → use environment variables.
+
+Patient names must never appear in logs.
+
+System must run in airplane mode without crashing.
+
+UI must support English + French.
+
+Keep architecture modular so features can be added yearly (based on academic timeline).
+
+Explain your file structure clearly.
+
+5. Initial Task
+
+Your first task:
+
+Create the project folder structure + boilerplate Rust backend + Docker configuration + README explaining how to run the system locally.
+
+Make sure the rust backend includes:
+
+POST /patient/create
+
+GET /patient/:id
+
+POST /sync endpoint
+
+Local queue handling (in-memory for now)
+
+6. Output Format
+
+Always return:
+
+Code blocks for each file
+
+Explanations
+
+Commands to run
+
+Notes about security and scalability
