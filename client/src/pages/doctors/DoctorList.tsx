@@ -17,6 +17,8 @@ import {
 } from "@/components/ui/dialog";
 import { useState } from "react";
 
+import { FileUpload } from "@/components/ui/file-upload";
+
 export default function DoctorList() {
   const [selectedDoctor, setSelectedDoctor] = useState<typeof doctors[0] | null>(null);
 
@@ -82,7 +84,7 @@ export default function DoctorList() {
                           Book Appointment
                         </Button>
                       </DialogTrigger>
-                      <DialogContent className="sm:max-w-[425px]">
+                      <DialogContent className="sm:max-w-[500px]">
                         <DialogHeader>
                           <DialogTitle>Book Appointment</DialogTitle>
                           <DialogDescription>
@@ -98,9 +100,13 @@ export default function DoctorList() {
                             <label className="text-sm font-medium">Reason for Visit</label>
                             <Input placeholder="E.g., Annual checkup, headache..." className="col-span-3" />
                           </div>
+                          <div className="grid gap-2">
+                            <label className="text-sm font-medium">Attach Medical Records (Optional)</label>
+                            <FileUpload label="Upload past prescriptions or reports" />
+                          </div>
                         </div>
                         <DialogFooter>
-                          <Button type="submit" onClick={() => alert('Appointment Request Sent!')}>Confirm Booking</Button>
+                          <Button type="submit" onClick={() => alert('Appointment Request Sent with Attachments!')}>Confirm Booking</Button>
                         </DialogFooter>
                       </DialogContent>
                     </Dialog>

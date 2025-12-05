@@ -3,8 +3,10 @@ import Layout from "@/components/layout/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { users, appointments } from "@/lib/mockData";
-import { Calendar, Clock, Activity, Heart, Search, ArrowRight, User } from "lucide-react";
+import { Calendar, Clock, Activity, Heart, Search, ArrowRight, User, Upload } from "lucide-react";
 import { Link } from "wouter";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
+import { FileUpload } from "@/components/ui/file-upload";
 
 export default function PatientDashboard() {
   const user = users[0];
@@ -21,12 +23,37 @@ export default function PatientDashboard() {
             </h1>
             <p className="text-gray-500">Here's your health overview for today.</p>
           </div>
-          <Link href="/doctors">
-            <Button className="bg-primary text-white hover:bg-primary/90 shadow-lg shadow-primary/25 rounded-xl h-12 px-6">
-              <Search className="w-4 h-4 mr-2" />
-              Find a Specialist
-            </Button>
-          </Link>
+          <div className="flex gap-2">
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline" className="rounded-xl h-12 px-4 border-gray-200 text-gray-600 hover:text-primary hover:border-primary/50">
+                  <Upload className="w-4 h-4 mr-2" />
+                  Upload Records
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[500px]">
+                <DialogHeader>
+                  <DialogTitle>Upload Medical Record</DialogTitle>
+                  <DialogDescription>
+                    Add past prescriptions, lab results, or insurance documents to your profile.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="py-4">
+                  <FileUpload />
+                </div>
+                <DialogFooter>
+                  <Button type="submit" onClick={() => alert('Record Uploaded!')}>Save to Profile</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+
+            <Link href="/doctors">
+              <Button className="bg-primary text-white hover:bg-primary/90 shadow-lg shadow-primary/25 rounded-xl h-12 px-6">
+                <Search className="w-4 h-4 mr-2" />
+                Find a Specialist
+              </Button>
+            </Link>
+          </div>
         </div>
 
         {/* Stats Grid */}
