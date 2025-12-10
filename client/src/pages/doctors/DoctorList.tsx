@@ -36,8 +36,9 @@ export default function DoctorList() {
     mutationFn: (data: any) => api.createAppointment(data),
     onSuccess: () => {
       toast.success("Appointment request sent successfully!");
-      queryClient.invalidateQueries({ queryKey: ['appointments'] });
+      queryClient.invalidateQueries({ queryKey: ['appointments', user?.id] });
       setSelectedDoctor(null);
+      setAppointmentData({ date: "", reason: "" }); // Clear form
     },
     onError: () => {
       toast.error("Failed to book appointment. Please try again.");
@@ -45,6 +46,7 @@ export default function DoctorList() {
   });
 
   const handleBookAppointment = () => {
+    console.log('Button clicked!', appointmentData); // Added console.log
     if (!user || !selectedDoctor || !appointmentData.date) {
       toast.error("Please fill in all required fields");
       return;
@@ -170,10 +172,9 @@ export default function DoctorList() {
                             <Button 
                               type="submit" 
                               onClick={handleBookAppointment}
-                              disabled={bookAppointmentMutation.isPending}
                               data-testid="button-confirm-booking"
                             >
-                              {bookAppointmentMutation.isPending ? "Booking..." : "Confirm Booking"}
+                              Confirm Booking
                             </Button>
                           </DialogFooter>
                         </DialogContent>

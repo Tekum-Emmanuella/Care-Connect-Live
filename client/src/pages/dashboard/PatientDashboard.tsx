@@ -151,9 +151,21 @@ export default function PatientDashboard() {
                         </span>
                       </div>
                     </div>
-                    <Button variant="outline" size="sm" className="rounded-lg border-gray-200">
-                      Reschedule
-                    </Button>
+                    <div className="flex gap-2">
+                      {apt.status === 'confirmed' && apt.videoLink && (
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          className="rounded-lg bg-primary text-white hover:bg-primary/90"
+                          onClick={() => window.open(apt.videoLink, '_blank')}
+                        >
+                          Join Video Call
+                        </Button>
+                      )}
+                      <Button variant="outline" size="sm" className="rounded-lg border-gray-200">
+                        Reschedule
+                      </Button>
+                    </div>
                   </div>
                 ))
               )}

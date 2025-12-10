@@ -57,6 +57,7 @@ export const appointments = pgTable("appointments", {
   reason: text("reason"),
   notes: text("notes"),
   attachments: text("attachments").array(),
+  videoLink: text("video_link"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

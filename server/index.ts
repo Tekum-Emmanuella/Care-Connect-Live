@@ -3,6 +3,16 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
+import session from "express-session";
+import connectPgSimple from "connect-pg-simple";
+import { pool } from "./db";
+import path from "path";
+
+declare module 'express-session' {
+  interface SessionData {
+    userId: number;
+  }
+}
 
 const app = express();
 const httpServer = createServer(app);
@@ -22,6 +32,22 @@ app.use(
 );
 
 app.use(express.urlencoded({ extended: false }));
+
+const PgSession = connectPgSimple(session);
+
+app.use(
+  session({
+    store: new PgSession({
+      pool: pool,
+      tableName: "user_sessions",
+      createTableIfMissing: true,
+    }),
+    secret: process.env.SESSION_SECRET || "supersecret",
+    resave: false,
+    saveUninitialized: false,
+    cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 }, // 30 days
+  })
+);
 
 export function log(message: string, source = "express") {
   const formattedTime = new Date().toLocaleTimeString("en-US", {
@@ -63,14 +89,6 @@ app.use((req, res, next) => {
 (async () => {
   await registerRoutes(httpServer, app);
 
-  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-    const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
-
-    res.status(status).json({ message });
-    throw err;
-  });
-
   // importantly only setup vite in development and after
   // setting up all the other routes so the catch-all route
   // doesn't interfere with the other routes
@@ -80,6 +98,30 @@ app.use((req, res, next) => {
     const { setupVite } = await import("./vite");
     await setupVite(httpServer, app);
   }
+
+  // Add the catch-all handler for SPA routing
+  app.get('*', (req, res) => {
+    // For any request that doesn't match an API route or static file,
+    // serve the index.html for the client-side application.
+    // This ensures that client-side routing works on refresh.
+    if (!req.path.startsWith('/api')) {
+      const indexPath = process.env.NODE_ENV === "production"
+        ? path.resolve(__dirname, "public", "index.html")
+        : path.resolve(import.meta.dirname, "..", "client", "index.html");
+      res.sendFile(indexPath);
+    } else {
+      // If it's an /api route that wasn't caught by registerRoutes,
+      // it's a 404 for an API endpoint.
+      res.status(404).json({ message: "API endpoint not found" });
+    }
+  });
+
+  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+    const status = err.status || err.statusCode || 500;
+    const message = err.message || "Internal Server Error";
+
+    res.status(status).json({ message });
+  });
 
   // ALWAYS serve the app on the port specified in the environment variable PORT
   // Other ports are firewalled. Default to 5000 if not specified.

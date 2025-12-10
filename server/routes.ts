@@ -53,6 +53,7 @@ export async function registerRoutes(
         return res.status(401).json({ error: "Invalid credentials" });
       }
       
+      req.session.userId = user.id;
       res.json({ user: { ...user, password: undefined } });
     } catch (error: any) {
       res.status(400).json({ error: error.message });
@@ -140,8 +141,12 @@ export async function registerRoutes(
   // Appointments
   app.post("/api/appointments", async (req, res) => {
     try {
+      if (!req.session.userId) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
       const data = insertAppointmentSchema.parse(req.body);
-      const appointment = await storage.createAppointment(data);
+      const videoLink = `https://meet.jit.si/CareConnect-${Math.random().toString(36).substring(2, 15)}`;
+      const appointment = await storage.createAppointment({ ...data, patientId: req.session.userId, videoLink });
       res.json(appointment);
     } catch (error: any) {
       res.status(400).json({ error: error.message });
@@ -150,6 +155,9 @@ export async function registerRoutes(
 
   app.get("/api/appointments/patient/:patientId", async (req, res) => {
     try {
+      if (!req.session.userId || req.session.userId !== parseInt(req.params.patientId)) {
+        return res.status(403).json({ error: "Forbidden" });
+      }
       const appointments = await storage.getPatientAppointments(
         parseInt(req.params.patientId)
       );
